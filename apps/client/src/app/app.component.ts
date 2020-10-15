@@ -28,7 +28,7 @@ import {
   shareReplay,
   startWith,
   switchMap,
-  tap,
+  tap
 } from 'rxjs/operators';
 import * as semver from 'semver';
 
@@ -189,9 +189,7 @@ export class AppComponent implements OnInit {
               private inventoryService: InventoryFacade, private gubal: GubalService, @Inject(PLATFORM_ID) private platform: Object,
               private quickSearch: QuickSearchService, public mappy: MappyReporterService,
               apollo: Apollo, httpLink: HttpLink, private tutorialService: TutorialService,
-              private playerMetricsService: PlayerMetricsService, private patreonService: PatreonService,
-              private craftingReplayFacade: CraftingReplayFacade,
-              private serializationHelper: ListRowSerializationHelper) {
+              private playerMetricsService: PlayerMetricsService, private patreonService: PatreonService) {
 
 
     fromEvent(document, 'keypress').pipe(
@@ -211,9 +209,9 @@ export class AppComponent implements OnInit {
     });
 
     // Scuff Zoom Handling
-    document.addEventListener("keydown", event => {
+    document.addEventListener('keydown', event => {
       if (event.ctrlKey && [187, 107].includes(event.keyCode)) {
-        return this.ipc.send('zoom-in', event)
+        return this.ipc.send('zoom-in', event);
       }
     });
 

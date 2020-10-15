@@ -34,14 +34,14 @@ import { List } from '../../../modules/list/model/list';
 import { getItemSource, ListRow } from '../../../modules/list/model/list-row';
 import { TagsPopupComponent } from '../../../modules/list/tags-popup/tags-popup.component';
 import {
-  NameQuestionPopupComponent,
+  NameQuestionPopupComponent
 } from '../../../modules/name-question-popup/name-question-popup/name-question-popup.component';
 import { PermissionsBoxComponent } from '../../../modules/permissions/permissions-box/permissions-box.component';
 import { ProgressPopupService } from '../../../modules/progress-popup/progress-popup.service';
 import { SettingsService } from '../../../modules/settings/settings.service';
 import { TeamsFacade } from '../../../modules/teams/+state/teams.facade';
 import {
-  TextQuestionPopupComponent,
+  TextQuestionPopupComponent
 } from '../../../modules/text-question-popup/text-question-popup/text-question-popup.component';
 import { InventorySynthesisPopupComponent } from '../inventory-synthesis-popup/inventory-synthesis-popup.component';
 import { InventoryViewComponent } from '../inventory-view/inventory-view.component';
@@ -55,6 +55,12 @@ import { ListHistoryPopupComponent } from '../list-history-popup/list-history-po
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListDetailsComponent extends TeamcraftPageComponent implements OnInit, OnDestroy {
+
+  public server$: Observable<string> = this.authFacade.mainCharacter$.pipe(
+    map(character => {
+      return character.Server;
+    })
+  );
 
   public display$: Observable<ListDisplay>;
 
@@ -105,16 +111,16 @@ export class ListDetailsComponent extends TeamcraftPageComponent implements OnIn
   private regeneratingList = false;
 
   constructor(private layoutsFacade: LayoutsFacade, public listsFacade: ListsFacade,
-    private activatedRoute: ActivatedRoute, private dialog: NzModalService,
-    private translate: TranslateService, private router: Router,
-    private alarmsFacade: AlarmsFacade, private message: NzMessageService,
-    private listManager: ListManagerService, private progressService: ProgressPopupService,
-    private teamsFacade: TeamsFacade, private authFacade: AuthFacade,
-    private discordWebhookService: DiscordWebhookService, private i18nTools: I18nToolsService,
-    private l12n: LocalizedDataService, private linkTools: LinkToolsService, protected seoService: SeoService,
-    private media: MediaObserver, public ipc: IpcService, private inventoryFacade: InventoryFacade,
-    public settings: SettingsService, public platform: PlatformService,
-    private serializationHelper:ListRowSerializationHelper
+              private activatedRoute: ActivatedRoute, private dialog: NzModalService,
+              private translate: TranslateService, private router: Router,
+              private alarmsFacade: AlarmsFacade, private message: NzMessageService,
+              private listManager: ListManagerService, private progressService: ProgressPopupService,
+              private teamsFacade: TeamsFacade, private authFacade: AuthFacade,
+              private discordWebhookService: DiscordWebhookService, private i18nTools: I18nToolsService,
+              private l12n: LocalizedDataService, private linkTools: LinkToolsService, protected seoService: SeoService,
+              private media: MediaObserver, public ipc: IpcService, private inventoryFacade: InventoryFacade,
+              public settings: SettingsService, public platform: PlatformService,
+              private serializationHelper: ListRowSerializationHelper
   ) {
     super(seoService);
     this.ipc.once('toggle-machina:value', (event, value) => {
@@ -334,11 +340,8 @@ export class ListDetailsComponent extends TeamcraftPageComponent implements OnIn
   };
 
   public getListJsonExport = (serverName: string, display: ListDisplay, list: List): string => {
-    const seed = list.items.filter(row => row.id < 20).reduce((exportString, row) => {
-      return this.appendExportStringWithRow(exportString, row);
-    }, `${this.translate.instant('Crystals')} :\n`) + '\n';
     return JSON.stringify(this.serializationHelper.getSerializedRowData(serverName, list.items, list.finalItems));
-  }
+  };
 
   regenerateList(list: List): void {
     this.regeneratingList = true;

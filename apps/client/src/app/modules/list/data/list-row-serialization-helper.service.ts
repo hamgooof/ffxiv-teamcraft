@@ -14,18 +14,74 @@ import { StoredNode } from '../model/stored-node';
 import { Vendor } from '../model/vendor';
 import { DataType } from './data-type';
 
-interface NameHolder { name: string, itemIdName?: string }
-interface ItemNameHolder { id: number | string, itemId?: string, name?: string, itemIdName?: string };
-interface NPCNameHolder { id: number, npcId?: number, npcName?: string, zoneName?: string };
-interface ZoneInfo { id?: number; npcId?: number; npcName?: string; zoneName?: string; zoneId?: any; zoneid?: any; mapId?: any; };
-interface MapInfo { zoneId?: any; zoneid?: any; mapId?: any; };
-interface CurrencyInfo { currencies: any[]; items: any[]; };
-interface NpcTradeData { npcs: any; trades: CurrencyInfo[]; };
-interface MonsterInfo { id: any; itemId?: any; position?: any; npcId?: number; npcName?: string; zoneName?: string; zoneId?: any; zoneid?: any; mapId?: any; };
-interface MonsterInfoWithMobName extends MonsterInfo, NameHolder { }
-interface VendorWithName extends Vendor, NameHolder { }
-interface InstanceWithName extends Instance, NameHolder { }
-interface GatherWithName extends GatheredBy, NameHolder { }
+interface NameHolder {
+  name: string,
+  itemIdName?: string
+}
+
+interface ItemNameHolder {
+  id: number | string,
+  itemId?: string,
+  name?: string,
+  itemIdName?: string
+};
+
+interface NPCNameHolder {
+  id: number,
+  npcId?: number,
+  npcName?: string,
+  zoneName?: string
+};
+
+interface ZoneInfo {
+  id?: number;
+  npcId?: number;
+  npcName?: string;
+  zoneName?: string;
+  zoneId?: any;
+  zoneid?: any;
+  mapId?: any;
+};
+
+interface MapInfo {
+  zoneId?: any;
+  zoneid?: any;
+  mapId?: any;
+};
+
+interface CurrencyInfo {
+  currencies: any[];
+  items: any[];
+};
+
+interface NpcTradeData {
+  npcs: any;
+  trades: CurrencyInfo[];
+};
+
+interface MonsterInfo {
+  id: any;
+  itemId?: any;
+  position?: any;
+  npcId?: number;
+  npcName?: string;
+  zoneName?: string;
+  zoneId?: any;
+  zoneid?: any;
+  mapId?: any;
+};
+
+interface MonsterInfoWithMobName extends MonsterInfo, NameHolder {
+}
+
+interface VendorWithName extends Vendor, NameHolder {
+}
+
+interface InstanceWithName extends Instance, NameHolder {
+}
+
+interface GatherWithName extends GatheredBy, NameHolder {
+}
 
 @Injectable({ providedIn: 'root' })
 export class ListRowSerializationHelper {
@@ -34,13 +90,14 @@ export class ListRowSerializationHelper {
     private i18nTools: I18nToolsService,
     private l12n: LocalizedDataService,
     private gt: GarlandToolsService,
-    private lazyData: LazyDataService,
+    private lazyData: LazyDataService
   ) {
   }
+
   public getSerializedRowData(
     serverName: string,
     rows: ListRow[],
-    finalItems: ListRow[]=undefined
+    finalItems: ListRow[] = []
   ): any {
     return this.getJsonExport(this.lazyData.getDCFromServerName(serverName), serverName, rows, finalItems);
   }
@@ -62,17 +119,17 @@ export class ListRowSerializationHelper {
 
   private serializeCraftedBy(craftedBy: any[]): any {
     return craftedBy ? craftedBy.map((obj: any) => {
-      const retval = {
+      return {
         ...obj,
         name: this.getItemName(obj.id),
         job: this.getJobAbbreviationFromId(obj.job)
       };
-      return retval
     }) : undefined;
   }
+
   private getJobAbbreviationFromId(job: number): string {
     const jobAbbr = this.getNameIfExists(this.l12n.getJobAbbr(job));
-    return jobAbbr != null && jobAbbr !== "missing name" ? jobAbbr : "DOWM";
+    return jobAbbr != null && jobAbbr !== 'missing name' ? jobAbbr : 'DOWM';
   }
 
   private getNameIfExists(name: I18nName): string {
@@ -88,7 +145,7 @@ export class ListRowSerializationHelper {
     return {
       ...obj,
       npcName: this.getNameIfExists(this.l12n.getNpc(obj.npcId)),
-      zoneName: this.getZoneName(obj),
+      zoneName: this.getZoneName(obj)
     };
   }
 
@@ -108,7 +165,7 @@ export class ListRowSerializationHelper {
   public serializeTrade(obj: CurrencyInfo): CurrencyInfo {
     return {
       currencies: obj.currencies && obj.currencies.length > 0 ? obj.currencies.map(c => this.applyItemName(c)) : undefined,
-      items: obj.items && obj.items.length > 0 ? obj.items.map(i => this.applyItemName(i)) : undefined,
+      items: obj.items && obj.items.length > 0 ? obj.items.map(i => this.applyItemName(i)) : undefined
     };
   }
 
@@ -116,19 +173,18 @@ export class ListRowSerializationHelper {
     return {
       ...obj,
       npcs: this.serializeNPCs(obj.npcs),
-      trades: obj.trades ? obj.trades.map(t => this.serializeTrade(t)) : undefined,
+      trades: obj.trades ? obj.trades.map(t => this.serializeTrade(t)) : undefined
     };
   }
 
   public applyMonsterInfo(obj: MonsterInfo): MonsterInfoWithMobName {
     const id = obj.id ? obj.id : obj.itemId ? obj.itemId : undefined;
     const mobName = this.getMobNameFromId(id);
-    const retval = {
+    return {
       ...obj,
       name: this.getNameIfExists(mobName),
-      zoneName: this.getZoneName(obj.position ? obj.position : obj),
+      zoneName: this.getZoneName(obj.position ? obj.position : obj)
     };
-    return retval;
   }
 
   private getMobNameFromId(id: number): I18nName {
@@ -152,10 +208,10 @@ export class ListRowSerializationHelper {
             return {
               ...threshold,
               venturesRemaining: Math.ceil((item.amount - item.done) / threshold.quantity)
-            }
+            };
           }),
         name: this.getNameIfExists(this.l12n.getVenture(venture.id)),
-        job: this.getJobAbbreviationFromId(venture.job),
+        job: this.getJobAbbreviationFromId(venture.job)
       };
       delete retval.gathering;
       delete retval.amounts;
@@ -166,9 +222,9 @@ export class ListRowSerializationHelper {
   }
 
   private applyIntanceName(instance: Instance): Instance {
-    const retval = { ...instance }
+    const retval = { ...instance };
     if (instance != null && !instance.name)
-      retval.name = this.getNameIfExists(this.l12n.getInstanceName(instance.id))
+      retval.name = this.getNameIfExists(this.l12n.getInstanceName(instance.id));
     return retval;
   }
 
@@ -193,7 +249,7 @@ export class ListRowSerializationHelper {
       return undefined;
     return {
       ...this.applyItemName({ id: gardening }),
-      url: `http://ffxivgardening.com/seed-details.php?SeedID=${gardening}`,
+      url: `http://ffxivgardening.com/seed-details.php?SeedID=${gardening}`
     };
   }
 
@@ -202,14 +258,13 @@ export class ListRowSerializationHelper {
   }
 
   private serializeGathering(gathering: GatheredBy): GatherWithName {
-    const retval = gathering ? {
+    return gathering ? {
       ...gathering,
       //name: this.getJobAbbreviationFromId(LayoutOrderService.getJobIdFromGather(gathering.type)),
-      //unclear what Id to use/convert to... 
-      name: gathering.icon ? gathering.icon.substr(gathering.icon.lastIndexOf("/"), 3) : undefined,
+      //unclear what Id to use/convert to...
+      name: gathering.icon ? gathering.icon.substr(gathering.icon.lastIndexOf('/'), 3) : undefined,
       nodes: gathering.nodes ? gathering.nodes.map((n: StoredNode) => this.serializeGatheringNode(n)) : []
     } : undefined;
-    return retval;
   }
 
   private serializeGatheringNode(n: StoredNode): any {
@@ -223,27 +278,26 @@ export class ListRowSerializationHelper {
 
   public getJsonExport(dc: string, server: string, rows: ListRow[], finalItems: ListRow[]): any {
     //convert all the desynth data into a single key value pair/dictionary (effectively dedupes for large dumps)
-    const desynthMap = {}
+    const desynthMap = {};
     const desynthData = rows
       .map((item: ListRow) => {
         const desynths = getItemSource(item, DataType.DESYNTHS);
-        return desynths && desynths.length > 0 ? desynths.map((r: any) => this.applyItemName({ id: r })) : undefined
+        return desynths && desynths.length > 0 ? desynths.map((r: any) => this.applyItemName({ id: r })) : undefined;
       })
       .filter(m => !!m)
       .reduce((pn, u) => [...pn, ...u], []);
     for (let i = 0; i < desynthData.length; i++) {
       desynthMap[desynthData[i].id] = desynthData[i].name;
     }
-    const retval = {
+    return {
       homeServer: server ? server : undefined,
       pricingURL: `https://universalis.app/api/${dc ? dc : '<DataCenter>'}/${rows.map(r => r.id).join(',')}`,
       items: rows
         .map(row => this.serializeDataRow(row)),
       desynthMap: desynthMap,
       finalItems: finalItems ? finalItems
-        .map(row => this.serializeDataRow(row)) : undefined,
+        .map(row => this.serializeDataRow(row)) : undefined
     };
-    return retval;
   }
 
   private serializeDataRow(item: ListRow) {
@@ -268,7 +322,7 @@ export class ListRowSerializationHelper {
     const name = this.getItemName(item.id);
     const retval: any = {
       ...this.applyItemName(item),
-      done: item.done ? true : false,
+      done: !!item.done,
       amountNeeded: item.amount_needed,
       used: item.used,
       requires: this.serializeRequires(item),
@@ -290,7 +344,7 @@ export class ListRowSerializationHelper {
       tripleTriadPack: this.serializeTripleTriadPack(tripleTriadPack),
       quests: this.serializeQuests(quests),
       achievements: this.serializeAchievements(achievements),
-      marketBoardLink: `https://universalis.app/market/${item.id}`,
+      marketBoardLink: `https://universalis.app/market/${item.id}`
     };
     //get rid of fields that are confusing for an export layer
     delete retval.sources;

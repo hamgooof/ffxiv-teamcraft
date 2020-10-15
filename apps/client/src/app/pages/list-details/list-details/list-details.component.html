@@ -199,17 +199,17 @@
               <i nz-icon nzType="copy"></i>
             </button>
             <ng-container *ngIf="server$ | async as server">
-            <button (click)="$event.stopPropagation()"
-                    *ngIf="display$ | async as listDisplay"
-                    [clipboard]="getListJsonExport"
-                    [clipboardFnArgs]="[server, listDisplay, list]"
-                    [clipboardSuccessMessage]="'LIST.Copied_as_json' | translate"
-                    [nzTooltipTitle]="'LIST.Copy_list_as_json' | translate"
-                    nz-button nz-tooltip
-                    nzShape="circle"
-                    nzSize="small">
-              <i nz-icon nzType="snippets"></i>
-            </button>
+              <button (click)="$event.stopPropagation()"
+                      *ngIf="display$ | async as listDisplay"
+                      [clipboard]="getListJsonExport"
+                      [clipboardFnArgs]="[server, listDisplay, list]"
+                      [clipboardSuccessMessage]="'LIST.Copied_as_json' | translate"
+                      [nzTooltipTitle]="'LIST.Copy_list_as_json' | translate"
+                      nz-button nz-tooltip
+                      nzShape="circle"
+                      nzSize="small">
+                <i nz-icon nzType="snippets"></i>
+              </button>
             </ng-container>
             <button (click)="regenerateList(list)" [disabled]="(permissionLevel$ | async) < 30"
                     [nzTooltipTitle]="'LIST.Regenerate' | translate" nz-button
